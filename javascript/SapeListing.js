@@ -16,16 +16,37 @@ jQuery(function($) {
 		selects.attr('disabled', 'disabled');
 
 		$.get(url, data, function(data) {
+                    
 			loadFromObj(data);
 			selects.removeAttr('disabled');
 			form.removeClass('loading');
 		});
 	};
-
+        
+        
+        /**
+	 *  Builds the charts 
+	 */
+	var buildGoogleChart = function(JSONdata) {
+                    
+                   
+                    
+                  //google.load('visualization', '1', {packages:['table']});
+                  ///var data = new google.visualization.DataTable(JSONdata);
+                  
+                  //var table = new google.visualization.Table(document.getElementById('chart_div'));
+                  //table.draw(data, {showRowNumber: true});
+           
+            
+            
+        }
 	/**
 	 * Loads faceting data from a JSON set.
 	 */
 	var loadFromObj = function(data) {
+                
+                buildGoogleChart(data);
+               
 		$.each(data, function(name, options) {
 			var select   = $("select[name='" + name + "']");
 			var selected = select.val();
