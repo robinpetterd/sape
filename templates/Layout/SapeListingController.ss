@@ -7,38 +7,35 @@
 
 <div id="content" class="typography has-sidebar">
     
+    
+        <!--Div that will hold the  chart-->
 
-    
-    
-    <!-- Code to build the actual chart. -->
- <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+ <!-- Code to build the actual chart. -->
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
+      
       function drawChart() {
        
-     
          var JSONObject = {
 
               cols: [
+              
+ 
+               {id: '$getPlotX', label: '$getPlotX', type: 'string'},
+               
                <% control PlotLabels %>
                   {id: '$Name', label: '$Title', type: 'number'},
-               <% end_control %>          
+               <% end_control %>   
+                    
                ],
 
-               
-              cols: [
-               
-                  {id: 'Diseases', label: 'Diseases', type: 'number'},
-               
-                  {id: 'DaysLapseSinceSailing', label: 'Days Lapse Since Sailing', type: 'number'},
-                         
-               ],
+            
               rows: [
-                    {c:[{v: '5'}, {v: 11}] },
-                    {c:[{v: '5'}, {v: 7}] },
-                    {c:[{v: '5'}, {v: 9}] }
-
+                    {c:[{v: '1'},{v: 334}, {v: 5}] },
+                    {c:[{v: '2'},{v: 5}, {v: 7}] },
+                    {c:[{v: '3'},{v: 5}, {v: 9}] }
               ]
 
 
@@ -48,18 +45,14 @@
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       chart.draw(data, {width: 600, height: 400, title: 'Plot'});
         
-        
       }
       
       
       
     </script>
     
-    
-        <!--Div that will hold the  chart-->
+    $VisItems
     <div id="chart_div"></div>
-
-
 
 
 
