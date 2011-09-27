@@ -51,7 +51,19 @@
       
     </script>
     
-    $VisItems
+    
+    <% control VisItems %>
+    <p> {c:[{v: $PercentageVoyageLapsed},
+       ,
+    </p>
+      <% control x %> 
+         $PercentageVoyageLapsed
+         <% control Diseases %>
+            $Name, $Count
+         <% end_control %>
+      <% end_control %>
+    <% end_control %>
+     
     <div id="chart_div"></div>
 
 

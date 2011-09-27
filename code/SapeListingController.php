@@ -1,4 +1,4 @@
-<?php    
+    <?php    
 
 /**
  * The SAPE DataObjectDecorator for the FacetedListingController
@@ -69,6 +69,7 @@ abstract class SapeListingController extends FacetedListingController {
 	 * @return DataObjectSet
 	 */
 	public function VisItems() {
+            
 		$result = new DataObjectSet();
                 $yFound = array();
                 
@@ -83,7 +84,8 @@ abstract class SapeListingController extends FacetedListingController {
                                 
                 $completelyPlots = array (); //a new of tracking which one's have been looked at is the past
                 
-    
+                $row = new DataObjectSet();;//list the diease that have been found 
+
 		if ($items) foreach ($items as $item) {
                     
                    // Debug::show($item->$xAxis);
@@ -114,47 +116,37 @@ abstract class SapeListingController extends FacetedListingController {
                         
                         //Find the other items with the same $item->$xAxis
                         
-                        //OLD $sameX = $items->find($xAxis,$item->$xAxis);
-                        
-                         /*$sameX = array(); 
-
-                         foreach ($items as $i) {  
-                            if($i->$xAxis == $item->$xAxis ) {
-                                echo "<p>Found " . $item->$xAxis . ' Line Number ' . $item->LineNumber;
-                                array_push($sameX, $i);
-
-                               } else {
-                            }
-                          }*/
                                       
                        //Check to see if there any other items with same x Axis
                        $xFound = array();
                        
                        foreach ($items as $SearchItem) {                           
                            if($SearchItem->$xAxis == $item->$xAxis ) {
-                              echo '<p> added that list days ' . $SearchItem->$xAxis ;
+                             // echo '<p> added that list days ' . $SearchItem->$xAxis ;
                              //$xFound->push($SearchItem->$xAxis);
                              array_push($xFound,$SearchItem);
                            }
 
                        }
                        //BUG - seems to still be counting twice 
-                        echo '<p> count are ' .  count($xFound);
+                        //echo '<p> count are ' .  count($xFound);
 
                        //Now for the day we need look at the dieases and count those.  
                        
                        //echo '<p> '.count($xFound) . ' day '. $xFound[0];
-                       $row = new DataObjectSet();;//list the diease that have been found 
+                       
+                       //Make the list of y stuff that has been found 
                        $count = 0;// how many times we have found the yPlot  
                        
-                       $yCounts = array();
+                       $yCounts = array(); // where the Disease for this day are being stored .
                         
                        foreach ($xFound as $Found) {
                            //lookat the disease that can be found on each
                            
                            foreach ($Found->Diseases() as $Disease) {
                                 //Debug::Show($Found->Diseases());//remove the hard coding 
-                                echo '<p> Looking at day'. $Found->$xAxis . ' and the disease we have found is ' . $Disease->Name;
+                                //BUG - turn on to see the bug 
+                                //echo '<p> Looking at day'. $Found->$xAxis . ' and the disease we have found is ' . $Disease->Name;
                                 
                                 array_push($yCounts,$Disease->Name);
                                
@@ -162,39 +154,145 @@ abstract class SapeListingController extends FacetedListingController {
                                  if (in_array($Disease,$yFound)) {
                                         //yes there arealad
                                     } else {
-                                        array_push($yFound,$Disease);
+                                        array_push($yFound,$Disease);//$yFound is all disease that have been found for this day
                                   }
                            }
                        }
+                       //echo '<p>';
                        
-                       $row->push( 
-                             new ArrayData(array(
-                                            $xAxis  => $Found->$xAxis,
-                                            'Diseases' => array_count_values($yCounts)
-                                      ))
+                       //print_r(array_count_values($yCounts));
+                       
+                       //Count what is in that  
+                       $yCounted = array_count_values($yCounts); 
+                       
+                       //now make that in nice value and count pair. 
+                       
+                       //look a each of what found build a result object and name and counts on the 
+                       //also add the that to the list object as   
+                      
+                       $list = new DataObjectSet();
+                       
+                       foreach ($yCounted as $key => $value) {
+                           //print "$key == $value <p>"; 
+                           $newResult = new SapeResult();
+                          
+                           $newResult->setField('Count',$value);
+                           $newResult->setField('Name',$key);
+                           //sDebug::show($newResult);
+                           $list->push($newResult);
+                           
+                       } 
+                       
+                       //Debug::show($list);
+                       
+                       
+                       //now need to convert this  
+                       
+                       //print_r(array_count_values($yFound));
+                       
+                       /*$row->push(new ArrayData(array(
+                                    'Colors' => new DataObjectSet(array( 
+                                             $xAxis  => $Found->$xAxis,
+                                            'Diseases' => $list
+                                            //'Diseases' =>  $yCounts,
+                                      )))
                                           
-                             );// this do
-                       //echo '<p>' . $Found->$xAxis . ' - ';
-                       foreach ($row as $r) {
-
-                              echo '<p> -------------  <p>Looking at day'. $r->$xAxis . ' and the disease we have found is '; 
-                              print_r($r->Diseases);
-                        }                            
-         
+                             ));// this do
+                             //
+                          
                     
+                       //*/
+                       
+                      $row->push(new ArrayData(array( 
+                         'x' => new DataObjectSet(array( 
+                            array( $xAxis  => $Found->$xAxis), 
+                            array('Diseases' => $list) 
+                         )) 
+                      )));
 
+                               
+                      // echo '<p>' . $Found->$xAxis . ' - ';
+                       //foreach ($row as $r) {
+
+                         //     echo '<p> -------------  <p>Looking at day '. $r->$xAxis . ' and the disease we have found is '; 
+                         //     Debug::show($r->Diseases);
+                        //}                            
+         
                     }
                     
-
-                    
-                    //make sure if   
+                   $result->push($row);
+                  //make sure if   
                     
 			
 		}
+                ///Debug::show($result);
+                //reformat the row's so that eall them have the same dieseases 
 
-	
+                return $row;
+                        
+                        
+                        
+                 /*foreach ($row as $r) {
+                       
+                     //echo '<p>';
+                     //print_r($r->Diseases);
+                       
+                       $DiseaseArray = array();
+                       
+                       foreach ($yFound as $y) {
+                          //echo $y->Name; 
+                          
+                          foreach ($r->Diseases as $d) {
+                              //Debug::Show($d);
+                              $name = $y->Name;
+                              //echo $d->$name . ' <p>';
+                              $currentCount = $d->$name;
+                              //echo $currentCount .  ' <p> '; 
+                              
+                              if($currentCount) {
+                                  //echo 'got it <p>';
+                                  $DiseaseArray[$name] = $currentCount; ;
+                                  
+                              } else {
+                                  //echo 'not found';
+                                  $DiseaseArray[$name] = 0; ;
 
-		return $result;
+                              }
+                          }
+                         
+                       
+                            
+                        };
+                        
+                        //echo '----------- <p>';
+                        
+                       // print_r($yCounts);
+                         
+                        Debug::Show($list);
+                         
+                        $result->push( 
+                             new ArrayData(array(
+                                            $xAxis  => $r->$xAxis,
+                                            'Diseases' => $list
+                                      ))
+                                          
+                         );
+                             
+                              //echo '<p> -------------  <p>Looking at day'. $r->$xAxis . ' and the disease we have found is '; 
+                              //print_r($r->Diseases);
+                        }   */                        
+         
+                        
+                        
+                       /*foreach ($result as $r) {
+
+                              echo '<p> -------------  <p>Looking at day'. $r->$xAxis . ' and the disease we have found is '; 
+                              print_r($r->Diseases);
+                        }*/
+                        
+                //print_r($result);
+                
+		//return $result;
 	}
 
 	
