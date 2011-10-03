@@ -1,30 +1,28 @@
     <?php    
 
 /**
- * The SAPE DataObjectDecorator for the FacetedListingController
+ * The SAPE exenstion for the FacetedListingController
  * 
  * Add replace the javascrits 
  *
  * @package 
  */
 
-
 abstract class SapeListingController extends FacetedListingController {
-        
-    public function init() {
+
+   
+       public function init() {
 		parent::init();
                                 
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-metadata/jquery.metadata.js');
 		//CHANGE so that we use the local .js so that Google DataTables can be made. 
                 Requirements::javascript('http://www.google.com/jsapi');
-                
-                        
-                       
-                Requirements::javascript('sape/javascript/SapeListing.js');
+                                       
+                //Requirements::javascript('sape/javascript/SapeListing.js');
 	}
 
-      
+        
         
         
     /*Function the should overwrite in actual use */
@@ -74,11 +72,12 @@ abstract class SapeListingController extends FacetedListingController {
                 $yFound = array();
                 
 		$items  = $this->getSourceItems();
+               
                 
                 
                 // getPlotClasses()
                 $xAxis =  $this->getPlotX();
-                
+               
                 //Debug::Show($xAxis);
 
                                 
@@ -88,7 +87,10 @@ abstract class SapeListingController extends FacetedListingController {
 
 		if ($items) foreach ($items as $item) {
                     
-                   // Debug::show($item->$xAxis);
+                    //echo '<br> day is ' . $item->$xAxis;
+                    
+              
+                    //Debug::show($item->$xAxis );
                     //
                     // check to see if have done this already
                     $done = FALSE;
@@ -122,18 +124,27 @@ abstract class SapeListingController extends FacetedListingController {
                        
                        foreach ($items as $SearchItem) {                           
                            if($SearchItem->$xAxis == $item->$xAxis ) {
-                             // echo '<p> added that list days ' . $SearchItem->$xAxis ;
+                               
+                                
+                               /* if($SearchItem->$xAxis == 77) {
+                                    echo '<p> found another enter with the same day' . $SearchItem->$xAxis ;
+
+                                }*/
+                             //Debug::Show($SearchItem);
                              //$xFound->push($SearchItem->$xAxis);
                              array_push($xFound,$SearchItem);
+                             
+                                  /*if($SearchItem->$xAxis == 77) {
+                                      echo '<pre>';
+                                             print_r(count($xFound));
+                                      echo '</pre>';
+
+                                   }*/
                            }
 
                        }
-                       //BUG - seems to still be counting twice 
-                        //echo '<p> count are ' .  count($xFound);
 
-                       //Now for the day we need look at the dieases and count those.  
-                       
-                       //echo '<p> '.count($xFound) . ' day '. $xFound[0];
+                     
                        
                        //Make the list of y stuff that has been found 
                        $count = 0;// how many times we have found the yPlot  
@@ -142,12 +153,19 @@ abstract class SapeListingController extends FacetedListingController {
                         
                        foreach ($xFound as $Found) {
                            //lookat the disease that can be found on each
-                           
+                             //if($Found->$xAxis == 77) {echo '<p>------------- <p>';};
+                             
                            foreach ($Found->Diseases() as $Disease) {
-                                //Debug::Show($Found->Diseases());//remove the hard coding 
+                               //if($Found->$xAxis == 77) { Debug::Show($Disease);};//
                                 //BUG - turn on to see the bug 
+                                //
+                                //
                                 //echo '<p> Looking at day'. $Found->$xAxis . ' and the disease we have found is ' . $Disease->Name;
                                 
+                                /*if($Found->$xAxis == 77) {
+                                 echo '<p> Looking at day'. $Found->$xAxis . ' and the disease we have found is ' . $Disease->Name;
+
+                                }*/
                                 array_push($yCounts,$Disease->Name);
                                
                                 //See if this in existing set of found stuff 
@@ -158,10 +176,13 @@ abstract class SapeListingController extends FacetedListingController {
                                   }
                            }
                        }
-                       //echo '<p>';
                        
-                       //print_r(array_count_values($yCounts));
+                        /*if($Found->$xAxis == 77) {
+                                echo '<p>';
+                                print_r(array_count_values($yCounts));
                        
+                       }*/
+                      
                        //Count what is in that  
                        $yCounted = array_count_values($yCounts); 
                        

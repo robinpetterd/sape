@@ -8,9 +8,11 @@
 <div id="content" class="typography has-sidebar">
     
     
-        <!--Div that will hold the  chart-->
+  
+                     
 
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
  <!-- Code to build the actual chart. -->
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
@@ -51,7 +53,6 @@
       
     </script>
     
-    
     <% control VisItems %>
     <p> {c:[{v: $PercentageVoyageLapsed},
        ,
@@ -63,6 +64,17 @@
          <% end_control %>
       <% end_control %>
     <% end_control %>
+                     
+
+
+
+        <!--Div that will hold the  chart-->
+
+    
+        
+
+
+                     
      
     <div id="chart_div"></div>
 
