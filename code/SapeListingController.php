@@ -158,8 +158,6 @@ abstract class SapeListingController extends FacetedListingController {
                            foreach ($Found->Diseases() as $Disease) {
                                //if($Found->$xAxis == 77) { Debug::Show($Disease);};//
                                 //BUG - turn on to see the bug 
-                                //
-                                //
                                 //echo '<p> Looking at day'. $Found->$xAxis . ' and the disease we have found is ' . $Disease->Name;
                                 
                                 /*if($Found->$xAxis == 77) {
@@ -204,25 +202,7 @@ abstract class SapeListingController extends FacetedListingController {
                            
                        } 
                        
-                       //Debug::show($list);
                        
-                       
-                       //now need to convert this  
-                       
-                       //print_r(array_count_values($yFound));
-                       
-                       /*$row->push(new ArrayData(array(
-                                    'Colors' => new DataObjectSet(array( 
-                                             $xAxis  => $Found->$xAxis,
-                                            'Diseases' => $list
-                                            //'Diseases' =>  $yCounts,
-                                      )))
-                                          
-                             ));// this do
-                             //
-                          
-                    
-                       //*/
                        
                       $row->push(new ArrayData(array( 
                          'x' => new DataObjectSet(array( 
@@ -246,28 +226,38 @@ abstract class SapeListingController extends FacetedListingController {
                     
 			
 		}
-                ///Debug::show($result);
-                //reformat the row's so that eall them have the same dieseases 
-
-                return $row;
-                        
-                        
-                        
-                 /*foreach ($row as $r) {
-                       
-                     //echo '<p>';
-                     //print_r($r->Diseases);
-                       
-                       $DiseaseArray = array();
+                return $result;
+                //echo 'is the looping <p>';
+                //Debug::show($result);
+                //
+                //
+                //Reformat the row's so that eall them have the same dieseases                         
+                
+                /*$newResults = new DataObjectSet();
+                
+                 foreach ($result as $r) {
+                      //Debug::Show($r);
+                      
+                      
+                     $DiseaseArray = array();
                        
                        foreach ($yFound as $y) {
-                          //echo $y->Name; 
-                          
-                          foreach ($r->Diseases as $d) {
-                              //Debug::Show($d);
+                           
+                           //Debug::show($y);
+                            $currentX= $r->x;
+                            print_r($r);
+                            
+                            //foreach ($currentX as $X) {
+                              //    $currentDiseases = $X->Diseases;
+                                    //echo '<p>';
+                             //}
+
+                          /*      
+                          foreach ($currentDiseases as $d) {
+                              Debug::Show($d);
                               $name = $y->Name;
                               //echo $d->$name . ' <p>';
-                              $currentCount = $d->$name;
+                              $currentCount = $d->Count;
                               //echo $currentCount .  ' <p> '; 
                               
                               if($currentCount) {
@@ -278,30 +268,22 @@ abstract class SapeListingController extends FacetedListingController {
                                   //echo 'not found';
                                   $DiseaseArray[$name] = 0; ;
 
-                              }
-                          }
+                              }*/
+                           
+                          //}
                          
+                      //}
+                  
                        
-                            
-                        };
-                        
-                        //echo '----------- <p>';
-                        
-                       // print_r($yCounts);
-                         
-                        Debug::Show($list);
-                         
-                        $result->push( 
+                       /* $result->push( 
                              new ArrayData(array(
                                             $xAxis  => $r->$xAxis,
                                             'Diseases' => $list
                                       ))
                                           
-                         );
-                             
-                              //echo '<p> -------------  <p>Looking at day'. $r->$xAxis . ' and the disease we have found is '; 
-                              //print_r($r->Diseases);
-                        }   */                        
+                         );*/
+
+                                               
          
                         
                         
@@ -313,7 +295,7 @@ abstract class SapeListingController extends FacetedListingController {
                         
                 //print_r($result);
                 
-		//return $result;
+		return $result;
 	}
 
 	
