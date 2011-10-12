@@ -20,30 +20,19 @@
       
       function drawChart() {
        
-         var JSONObject = {
+          var data = new google.visualization.DataTable();
+          data.addColumn('string', 'day');
+          data.addColumn('number', 'Flu');
+          data.addColumn('number', 'Mad');
+          data.addColumn('number', 'Blood');
+          
+          data.addRow(["0", 1, 1, 0.5]);
+          data.addRow(["1", 2, 0.5, 1]);
+          data.addRow(["2", 4, 1, 0.5]);
+          data.addRow(["3", 8, 0.5, 1]);
+          data.addRow(["4", 7, 1, 0.5]);
+  
 
-              cols: [
-              
- 
-               {id: '$getPlotX', label: '$getPlotX', type: 'string'},
-               
-               <% control PlotLabels %>
-                  {id: '$Name', label: '$Title', type: 'number'},
-               <% end_control %>   
-                    
-               ],
-
-            
-              rows: [
-                    {c:[{v: '1'},{v: 334}, {v: 5}] },
-                    {c:[{v: '2'},{v: 5}, {v: 7}] },
-                    {c:[{v: '3'},{v: 5}, {v: 9}] }
-              ]
-
-
-         };
-
-      var data = new google.visualization.DataTable(JSONObject)
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       chart.draw(data, {width: 600, height: 400, title: 'Plot'});
         
@@ -53,30 +42,30 @@
       
     </script>
     
-    <% control VisItems %>
-    <p> {c:[{v: $PercentageVoyageLapsed},
-       ,
-    </p>
-      <% control x %> 
-         $PercentageVoyageLapsed
-         <% control Diseases %>
-            $Name, $Count
-         <% end_control %>
-      <% end_control %>
-    <% end_control %>
+            <!--  rows: [
+                    <% control VisItems %>
+                        {c:[{v: $PercentageVoyageLapsed},
+                           <% control x %> 
+                             <% control Diseases %>
+                                {v:$Name}, {v:$Count}
+                             <% end_control %>
+                          <% end_control %>
+                        <% end_control %>
+                        ] }                 
+              ] --!>
                      
 
 
+<% control VisItems >
 
-        <!--Div that will hold the  chart-->
+{c:[{v: $PercentageVoyageLapsed}, ,
 
-    
-        
-
-
-                     
-     
-    <div id="chart_div"></div>
+< control x > $PercentageVoyageLapsed < control Diseases > $Name, $Count < end_control > < end_control > < end_control %>
+            
+            
+            
+        <!--Div that will hold the chart-->
+        <div id="chart_div"></div>
 
 
 
