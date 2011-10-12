@@ -221,96 +221,125 @@ abstract class SapeListingController extends FacetedListingController {
 			
 		}
                 
-                return $row;
+                //return $row;
                 
                 ///Debug::show($result);
                 //reformat the row's so that eall them have the same dieseases 
                 
                                                 
-                 /*foreach ($row as $r) {
+                 foreach ($row as $r) {
+                     
                      $list = new DataObjectSet();  
                      //print_r($r->x);
-                     $currentX = $r->x;
+                     //print_r('<p>--------------<p>');
+
+                     
+                     $current = $r->x;
                      //print_r($currentX);
                      
-                     foreach ($currentX as $X) {
+                     foreach ($current as $c) {
+                      //NEED to find out this day for the disease 
+                       
+                        if ($c->$xAxis) {
+                           $currentXaxis = $c->$xAxis; 
+                            //echo 'yes this the days ' . $currentXaxis .  '<p>' ;
+                       }  
+                       
+                       //print_r($c);
                          
-                         //print_r($X);
+                       //print_r('<p>--------------<p>');
                          
-                        // print_r('<p>-------');
-                         
+                        foreach ($c as $X) {
+ 
                          if($X->Diseases) {
                              //print_r($X->Diseases); 
                              $d = $X->Diseases; 
                              //echo '<p>';
                             
                              foreach($d as $Diseases) {
+                                 //print_r('<p>--- XXXX-----------<p>');
                                  
-                                                                  
+                                 
                                  foreach($Diseases as $Result) {
-                                     
+                                    
+                                     foreach($Result as $d) {
+                                        
+                                      //Debug::Show($d);
+                                        
+                                        //print_r($d);
+                                        //print_r('<p>--- XXXX-----------<p>');  
+                                      
                                       foreach ($yCounts as $y){
                                           
-                                              //print_r($y);  
-                                            if ($Result->Name == $y ) {
-                                                 echo 'got it <p>';
-                                                 $currentCount = $d->Result;
-                                                 echo $d->Result;
-
-                                               if($currentCount) {
-                                                  //echo 'got it <p>';
-
-                                                   $newResult = new SapeResult();
-
-                                                   $newResult->setField('Count',$currentCount);
-                                                   $newResult->setField('Name',$Result->Name);
-                                                   //sDebug::show($newResult);
-                                                   $list->push($newResult);
-
-                                              } else {
-                                                  //echo 'not found';
-                                                   $newResult = new SapeResult();
-
-                                                   $newResult->setField('Count','0');
-                                                   $newResult->setField('Name',$Result->Name);
-                                                   //sDebug::show($newResult);
-                                                   $list->push($newResult);
-
-
+                                           //print_r($y);  
+                                            if ($d->Name == $y ) {
+                                                 //echo 'got it <p>';
+                                                 $currentCount = $d->Count;
+                                                 //echo $d->Result;
+                                            } else {
+                                                $currentCount = null;
                                             }
+                                             
+                                            if($currentCount <= 0) {
+                                                      //echo 'got it <p>';
+
+                                                       $newResult = new SapeResult();
+
+                                                       $newResult->setField('Count',$d->Count);
+                                                       $newResult->setField('Name',$d->Name);
+                                                       ///Debug::show($newResult);
+                                                       $list->push($newResult);
+
+                                                  } else {
+                                                      //echo 'not found';
+                                                       $newResult = new SapeResult();
+
+                                                       $newResult->setField('Count','0');
+                                                       $newResult->setField('Name',$Result->Name);
+                                                       //Debug::show($newResult);
+                                                       $list->push($newResult);
+
+                                                }
 
                                       
-                                          }
+                                         
                                           
                                           
                                   
                                    }
                                  }
+                               }
                              }
                              
                          }
+                         
+                     }
+                      
+                     $result->push(new ArrayData(array( 
+                         'x' => new DataObjectSet(array( 
+                            array( $xAxis  => $currentXaxis), //need to get the write day
+                            array('Diseases' => $list) 
+                         )) 
+                      )));
+                     
+                     //Debug::show($list);
+                      
                      }
                      
                      
-                 $result->push(new ArrayData(array( 
-                         'x' => new DataObjectSet(array( 
-                            array( $xAxis  => '55'), //need to get the write day
-                            array('Diseases' => $list) 
-                         )) 
-                 )));
+                
                 }                         
          
-                    */    
+                       
                         
-                       /*foreach ($result as $r) {
+                       //foreach ($result as $r) {
 
-                              echo '<p> -------------  <p>Looking at day'. $r->$xAxis . ' and the disease we have found is '; 
-                              print_r($r->Diseases);
-                        }*/
+                       //       print_r($r->x);
+                       // }
                         
                 //print_r($result);
                 
-		//return $result;
+		return $result;
                     
              
 
