@@ -42,25 +42,26 @@
       
     </script>
     
-            <!--  rows: [
-                    <% control VisItems %>
-                        {c:[{v: $PercentageVoyageLapsed},
-                           <% control x %> 
-                             <% control Diseases %>
-                                {v:$Name}, {v:$Count}
-                             <% end_control %>
-                          <% end_control %>
-                        <% end_control %>
-                        ] }                 
-              ] --!>
-                     
+       <% control VisItems %>
+       
+       data.addRow([
+           <% control x %>
+            "$PercentageVoyageLapsed",
+                 <% control Diseases %>
+                      $Count,
+                 <% end_control %>
+           <% end_control %>
+            ]);<p>
+     
+     <% end_control %>
+
+                  
+
+        
 
 
-<% control VisItems >
 
-{c:[{v: $PercentageVoyageLapsed}, ,
 
-< control x > $PercentageVoyageLapsed < control Diseases > $Name, $Count < end_control > < end_control > < end_control %>
             
             
             
