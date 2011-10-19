@@ -41,14 +41,14 @@
       
       
     </script>
-    
+    <p>
        <% control VisItems %>
        
        data.addRow([
            <% control x %>
             "$PercentageVoyageLapsed",
                  <% control Diseases %>
-                      $Count,
+                    $Name  $Count,
                  <% end_control %>
            <% end_control %>
             ]);<p>

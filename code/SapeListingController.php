@@ -70,14 +70,10 @@ abstract class SapeListingController extends FacetedListingController {
                 $yFound = array();
                 
 		$items  = $this->getSourceItems();
-               
-                
-                
+                               
                 // getPlotClasses()
                 $xAxis =  $this->getPlotX();
                
-                //Debug::Show($xAxis);
-
                                 
                 $completelyPlots = array (); //a new of tracking which one's have been looked at is the past
                 
@@ -87,7 +83,6 @@ abstract class SapeListingController extends FacetedListingController {
                     
                     //echo '<br> day is ' . $item->$xAxis;
                     
-              
                     //Debug::show($item->$xAxis );
                     //
                     // check to see if have done this already
@@ -104,7 +99,6 @@ abstract class SapeListingController extends FacetedListingController {
                         
                     }
                     
-                    
                    // Only do this the xAxis hasn't been loked at before. 
                     if ($done == TRUE) {
                         //echo "<p>Done this already " . $item->$xAxis  ;
@@ -115,14 +109,12 @@ abstract class SapeListingController extends FacetedListingController {
                        //Now we do the actual core bit 
                         
                         //Find the other items with the same $item->$xAxis
-                        
                                       
                        //Check to see if there any other items with same x Axis
                        $xFound = array();
                        
                        foreach ($items as $SearchItem) {                           
                            if($SearchItem->$xAxis == $item->$xAxis ) {
-                               
                                 
                                /* if($SearchItem->$xAxis == 77) {
                                     echo '<p> found another enter with the same day' . $SearchItem->$xAxis ;
@@ -131,13 +123,7 @@ abstract class SapeListingController extends FacetedListingController {
                              //Debug::Show($SearchItem);
                              //$xFound->push($SearchItem->$xAxis);
                              array_push($xFound,$SearchItem);
-                             
-                                  /*if($SearchItem->$xAxis == 77) {
-                                      echo '<pre>';
-                                             print_r(count($xFound));
-                                      echo '</pre>';
-
-                                   }*/
+                               
                            }
 
                        }
@@ -148,41 +134,33 @@ abstract class SapeListingController extends FacetedListingController {
                        $count = 0;// how many times we have found the yPlot  
                        
                        $yCounts = array(); // where the Disease for this day are being stored .
-                        
+                       //Debug::Show($xFound);
+                       
                        foreach ($xFound as $Found) {
                            //lookat the disease that can be found on each
                              //if($Found->$xAxis == 77) {echo '<p>------------- <p>';};
                              
                            foreach ($Found->Diseases() as $Disease) {
-                               //if($Found->$xAxis == 77) { Debug::Show($Disease);};//
-                                //BUG - turn on to see the bug 
-                                //
-                                //
-                                //echo '<p> Looking at day'. $Found->$xAxis . ' and the disease we have found is ' . $Disease->Name;
-                                
-                                /*if($Found->$xAxis == 77) {
-                                 echo '<p> Looking at day'. $Found->$xAxis . ' and the disease we have found is ' . $Disease->Name;
-
-                                }*/
+                        
                                 array_push($yCounts,$Disease->Name);
-                               
+                                
+                                //debug::Show($Disease->Name);
+                                
                                 //See if this in existing set of found stuff 
-                                 if (in_array($Disease,$yFound)) {
+                                 if (in_array($Disease->Name,$yFound)) {
                                         //yes there arealad
-                                    } else {
-                                        array_push($yFound,$Disease);//$yFound is all disease that have been found for this day
+                                   } else {
+                                        array_push($yFound,$Disease->Name);//$yFound is all disease that have been found for this day
                                   }
                            }
                        }
                        
-                        /*if($Found->$xAxis == 77) {
-                                echo '<p>';
-                                print_r(array_count_values($yCounts));
-                       
-                       }*/
+                       ///Debug::show($yCounts);
                       
                        //Count what is in that  
-                       $yCounted = array_count_values($yCounts); 
+                       $yCounted = array_count_values($yCounts);
+                      // echo '<p>-------- counts are -  ------- <p>'; 
+                      //Debug::show($yCounted);
                        
                        //now make that in nice value and count pair. 
                        
@@ -202,7 +180,7 @@ abstract class SapeListingController extends FacetedListingController {
                            
                        } 
                    
-                       
+                      /* for sending back out the templates 
                       $row->push(new ArrayData(array( 
                          'x' => new DataObjectSet(array( 
                             array( $xAxis  => $Found->$xAxis), 
@@ -210,10 +188,17 @@ abstract class SapeListingController extends FacetedListingController {
                          )) 
                       )));
 
-                               
-                                               
+
+                      */
+                       
+                      $row->push(array( 
+                            array( $xAxis  => $Found->$xAxis), 
+                            array('Diseases' => $list) 
+                         ) 
+                      );                                          
          
                     }
+                    //Debug::Show($row);
                     
                   // $result->push($row);
                   //make sure if   
@@ -224,96 +209,77 @@ abstract class SapeListingController extends FacetedListingController {
                 //return $row;
                 
                 ///Debug::show($result);
+                //
+               
+                
                 //reformat the row's so that eall them have the same dieseases 
                 
                                                 
                  foreach ($row as $r) {
                      
                      $list = new DataObjectSet();  
-                     //print_r($r->x);
+                     //print_r($r[0][$xAxis]);
+                     
                      //print_r('<p>--------------<p>');
-
                      
-                     $current = $r->x;
-                     //print_r($currentX);
+                     $currentXaxis = $r[0][$xAxis];
                      
-                     foreach ($current as $c) {
-                      //NEED to find out this day for the disease 
-                       
-                        if ($c->$xAxis) {
-                           $currentXaxis = $c->$xAxis; 
-                            //echo 'yes this the days ' . $currentXaxis .  '<p>' ;
-                       }  
-                       
-                       //print_r($c);
-                         
-                       //print_r('<p>--------------<p>');
-                         
-                        foreach ($c as $X) {
- 
-                         if($X->Diseases) {
-                             //print_r($X->Diseases); 
-                             $d = $X->Diseases; 
-                             //echo '<p>';
-                            
-                             foreach($d as $Diseases) {
-                                 //print_r('<p>--- XXXX-----------<p>');
-                                 
-                                 
-                                 foreach($Diseases as $Result) {
+                     //print_r($currentXaxis);
+                     
+                     $d = $r[1]; // d is the current Diseases for this day
+                    
+                     
+                     //print_r('<p>--- New Day ----------- '.  $currentXaxis . '<p>');
+                     
+                      
+                             foreach ($yFound as $y){
                                     
-                                     foreach($Result as $d) {
-                                        
-                                      //Debug::Show($d);
-                                        
-                                        //print_r($d);
-                                        //print_r('<p>--- XXXX-----------<p>');  
-                                      
-                                      foreach ($yCounts as $y){
-                                          
-                                           //print_r($y);  
-                                            if ($d->Name == $y ) {
-                                                 //echo 'got it <p>';
-                                                 $currentCount = $d->Count;
-                                                 //echo $d->Result;
-                                            } else {
-                                                $currentCount = null;
+                                  $foundStatus = FALSE;
+                                    
+                                    foreach($d as $Diseases) {
+                                                                                        
+                                           foreach($Diseases as $Result) {
+                  
+                                           //print_r($y);
+                                           //print_r('<p> ------- <p>');
+                                            
+                                            if ($Result->Name == $y ) {
+                                                            //echo 'got it <p>';
+                                                           $newResult = new SapeResult();
+
+                                                           $newResult->setField('Count',$Result->Count);
+                                                           $newResult->setField('Name',$Result->Name);
+                                                           //Debug::show($newResult);
+                                                           $list->push($newResult);
+                                                           $foundStatus = TRUE;
+                                                        } else {
+                                                            //echo 'didnt get it  <p>';
+                                                           $foundStatus = FALSE;
+
                                             }
-                                             
-                                            if($currentCount <= 0) {
-                                                      //echo 'got it <p>';
+                                            
+                                     }
+                                
+                                  if($foundStatus == FALSE) {
+                                   $newResult = new SapeResult();
 
-                                                       $newResult = new SapeResult();
-
-                                                       $newResult->setField('Count',$d->Count);
-                                                       $newResult->setField('Name',$d->Name);
-                                                       ///Debug::show($newResult);
-                                                       $list->push($newResult);
-
-                                                  } else {
-                                                      //echo 'not found';
-                                                       $newResult = new SapeResult();
-
-                                                       $newResult->setField('Count','0');
-                                                       $newResult->setField('Name',$Result->Name);
-                                                       //Debug::show($newResult);
-                                                       $list->push($newResult);
-
-                                                }
-
-                                      
-                                         
-                                          
-                                          
-                                  
+                                   $newResult->setField('Count','0');
+                                   $newResult->setField('Name',$y);
+                                   //Debug::show($newResult);
+                                   $list->push($newResult);
+                                   
+                                   } else {
+                                       
                                    }
-                                 }
+                                  
+                                  // Debug::Show('in the loop');
+
                                }
+                           
+                                
+                                       
                              }
-                             
-                         }
-                         
-                     }
+                                                    
                       
                      $result->push(new ArrayData(array( 
                          'x' => new DataObjectSet(array( 
@@ -322,9 +288,8 @@ abstract class SapeListingController extends FacetedListingController {
                          )) 
                       )));
                      
-                     //Debug::show($list);
                       
-                     }
+                     
                      
                      
                 
