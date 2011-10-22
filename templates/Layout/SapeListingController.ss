@@ -22,26 +22,20 @@
        
           var data = new google.visualization.DataTable();
           data.addColumn('string', 'day');
-         data.addColumn('number', 'Other fever');
-           data.addColumn('number', 'Unknown');
-           data.addColumn('number', 'Accident');
-           data.addColumn('number', 'Unclassifiable');
-           data.addColumn('number', 'Diseases of the nervous system');
-           data.addColumn('number', 'Nausea');
-           data.addColumn('number', 'Diseases of the digestive system');
-           data.addColumn('number', 'Other infectious diseases');
-           data.addColumn('number', 'Vaccinated');
-           data.addColumn('number', 'Preganancy');
-           data.addColumn('number', 'childbirth and the puerperium');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
-   data.addColumn('number', 'Other fever');
+      
+         <% control VisItems %>
+          <% if Last %>
+                 <% control x %>
+                     <% control Diseases %>
+                        <% if Name != Diseases %>
+                         data.addColumn('number', '$Name');
+                        <% end_if %>
+                     <% end_control %>
+               <% end_control %>
+           <% end_if %>
+         <% end_control %>
+
+
       <% control VisItems %>
            data.addRow([
                <% control x %>
@@ -69,7 +63,8 @@
       
     </script>
     <p>
-      
+
+         
       <!--  
       <% control VisItems %>
            data.addRow([

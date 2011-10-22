@@ -310,13 +310,9 @@ abstract class SapeListingController extends FacetedListingController {
                             array('Diseases' => $list) 
                          )),
                             
-                          'x' => new DataObjectSet(array( 
-                                $yFound
-                         ))
+                       
                             
                       )));                  
-                      
-                     
                      
                      
                 
