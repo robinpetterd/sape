@@ -42,22 +42,31 @@
                 <% if PercentageVoyageLapsed == 0 %>
                     "$PercentageVoyageLapsed",
                 <% end_if %>
-                
                 <% if PercentageVoyageLapsed %>
                     "$PercentageVoyageLapsed",
                 <% end_if %>
-                
-                     <% control Diseases %> <% if Name != Diseases %>$Count,  <% end_if %>
+                     <% control Diseases %> <% if Name != Diseases %>$Count,<% end_if %>
                      <% end_control %><% end_control %>
                 ]);
 
      <% end_control %>
   
-
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      chart.draw(data, {width: 900, height: 600, title: 'Plot'});
+     
+      var options = {
+          width: 950, 
+          height: 750, 
+          title: 'Diseases and % of the vogage',
+          vAxis: {title:''},
+          hAxis: {title:'% of the vogage'},
+
+          };
+          
+     chart.draw(data, options
+     );
         
-      }
+        
+}
       
       
       
