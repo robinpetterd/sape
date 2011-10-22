@@ -220,31 +220,37 @@ abstract class SapeListingController extends FacetedListingController {
                      $list = new DataObjectSet();  
                      //print_r($r[0][$xAxis]);
                      
-                     //print_r('<p>--------------<p>');
+                    //print_r('<p>--------------<p>');
+                  
                      
                      $currentXaxis = $r[0][$xAxis];
                      
                      //print_r($currentXaxis);
                      
                      $d = $r[1]; // d is the current Diseases for this day
-                    
                      
                      //print_r('<p>--- New Day ----------- '.  $currentXaxis . '<p>');
-                     
+                        
+                             $alreadyFound = array(); 
                       
                              foreach ($yFound as $y){
                                     
                                   $foundStatus = FALSE;
                                     
                                     foreach($d as $Diseases) {
-                                                                                        
+                                           
+                                          // if($r[0][$xAxis] == 59 ){Debug::Show($Diseases);};
+
                                            foreach($Diseases as $Result) {
-                  
-                                           //print_r($y);
+                                           //if($r[0][$xAxis] == 59 ){Debug::Show($Result);};
+                                           //print_r($Result);
                                            //print_r('<p> ------- <p>');
+                                           //printd_r($currentXaxis);
+                                           //print_r('<p> ------- <p>');
+
                                             
                                             if ($Result->Name == $y ) {
-                                                            //echo 'got it <p>';
+                                                          // echo 'got it <p>';
                                                            $newResult = new SapeResult();
 
                                                            $newResult->setField('Count',$Result->Count);
@@ -252,6 +258,8 @@ abstract class SapeListingController extends FacetedListingController {
                                                            //Debug::show($newResult);
                                                            $list->push($newResult);
                                                            $foundStatus = TRUE;
+                                                           array_push($alreadyFound,$Result->Name);
+                                                           
                                                         } else {
                                                             //echo 'didnt get it  <p>';
                                                            $foundStatus = FALSE;
@@ -260,14 +268,28 @@ abstract class SapeListingController extends FacetedListingController {
                                             
                                      }
                                 
+                                 
                                   if($foundStatus == FALSE) {
-                                   $newResult = new SapeResult();
+                                                                          
+                                      /* if(($r[0][$xAxis] == 59) && ($y == 'Respiratory tuberculosis') ){
+                                           Debug::Show($alreadyFound);
+    
+                                        }*/
+                                      
+                                       
+                                       if (in_array($y, $alreadyFound)) {
+                                            // echo "RT <p>";
+                                       } else  {
+                                         
+                                       $newResult = new SapeResult();
 
-                                   $newResult->setField('Count','0');
-                                   $newResult->setField('Name',$y);
-                                   //Debug::show($newResult);
-                                   $list->push($newResult);
-                                   
+                                       $newResult->setField('Count','0');
+                                       $newResult->setField('Name',$y);
+                                       //Debug::show($newResult);
+                                       $list->push($newResult);
+                                       }
+                                 
+
                                    } else {
                                        
                                    }
@@ -280,7 +302,7 @@ abstract class SapeListingController extends FacetedListingController {
                                        
                              }
                                                     
-                      
+                             
                      $result->push(new ArrayData(array( 
                          'x' => new DataObjectSet(array( 
                             array( $xAxis  => $currentXaxis), //need to get the write day
