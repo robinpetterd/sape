@@ -302,14 +302,19 @@ abstract class SapeListingController extends FacetedListingController {
                                        
                              }
                                                     
-                             
-                     $result->push(new ArrayData(array( 
+                
+                     
+                        $result->push(new ArrayData(array( 
                          'x' => new DataObjectSet(array( 
                             array( $xAxis  => $currentXaxis), //need to get the write day
                             array('Diseases' => $list) 
-                         )) 
-                      )));
-                     
+                         )),
+                            
+                          'x' => new DataObjectSet(array( 
+                                $yFound
+                         ))
+                            
+                      )));                  
                       
                      
                      
