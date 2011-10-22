@@ -70,6 +70,8 @@ abstract class SapeListingController extends FacetedListingController {
                 $yFound = array();
                 
 		$items  = $this->getSourceItems();
+                //Debug::show($items);
+                $items->sort('PercentageVoyageLapsed');
                                
                 // getPlotClasses()
                 $xAxis =  $this->getPlotX();

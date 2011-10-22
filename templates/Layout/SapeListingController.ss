@@ -55,7 +55,7 @@
   
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      chart.draw(data, {width: 600, height: 400, title: 'Plot'});
+      chart.draw(data, {width: 900, height: 600, title: 'Plot'});
         
       }
       
