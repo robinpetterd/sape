@@ -16,6 +16,9 @@ abstract class SapeListingController extends FacetedListingController {
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-metadata/jquery.metadata.js');
 		//CHANGE so that we use the local .js so that Google DataTables can be made. 
                 Requirements::javascript('http://www.google.com/jsapi');
+                
+               // Session::set('Filtered', false);
+                
                                        
                 //Requirements::javascript('sape/javascript/SapeListing.js');
 	}
@@ -59,13 +62,72 @@ abstract class SapeListingController extends FacetedListingController {
          
      }
      
+        public function change() {
+             Session::set('Filtered', false);
+
+        }
      
-    
+     	public function doFilter($data, $form) {
+                
+                Session::set('Filtered', true);
+
+                
+		$query  = $this->generateQuery($data, $form);
+		$result = $query->execute();
+
+		$this->sourceItems = singleton('DataObject')->buildDataObjectSet($result);
+
+		if ($this->sourceItems) {
+			$this->sourceItems->parseQueryLimit($query);
+		} else {
+			$this->sourceItems = new DataObjectSet();
+		}
+                
+		// Add faceting data to the page.
+		$metadata = sprintf(
+			'<script id="listing-facets" type="data">%s</script>',
+			$this->generateFacetJson($data)
+		);
+		Requirements::insertHeadTags($metadata, 'listing-facets');
+
+		$controller = $this->customise(array(
+			'Title'            => $this->PluralName(),
+			'CachedFilterForm' => $form
+		));
+		return $this->getViewer('list')->process($controller);
+	}
+        
+        
+     
+      
+        public function TableItems() {
+            
+             $filterStatus = Session::get('Filtered');
+                
+            if($filterStatus == 0) { 
+                    return;  // just give up                  
+              } else {
+              
+                  echo 'there';
+              };
+        }
+        
+        
      	/** Returns the data for use in the JSON google chart.
 	 * @return DataObjectSet
 	 */
 	public function VisItems() {
-            
+                
+                //only do this if the search has been filter already
+                $filterStatus = Session::get('Filtered');
+                
+                
+                if($filterStatus == 0) { 
+                    return;  // just give up 
+                    
+                 
+                };
+                
 		$result = new DataObjectSet();
                 $yFound = array();
                 

@@ -1,15 +1,12 @@
 <% require themedCSS(FacetedListingController) %>
 
 
-<div id="sidebar">
+<div id="filter">
 	$CachedFilterForm
 </div>
 
 <div id="content" class="typography has-sidebar">
-    
-    
-  
-                     
+                    
 
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -54,8 +51,8 @@
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
      
       var options = {
-          width: 950, 
-          height: 750, 
+          width: 600, 
+          height: 390, 
           title: 'Diseases and % of the vogage',
           vAxis: {title:''},
           hAxis: {title:'% of the vogage'},
@@ -106,6 +103,7 @@
 
 
 
+        <div class="clear"></div>
 
 	<table id="listing-items">
 		<thead>
