@@ -22,7 +22,7 @@
                   var columnCount = 2; 
                   var columnArray = Array();
                   
-                  data.addColumn('string', 'day');
+                  data.addColumn('number', 'day');
                   data.addColumn('number', 'Lat');
                   data.addColumn('number', 'Long');
 
@@ -42,10 +42,10 @@
                             
                         <% control x %>
                             <% if PercentageVoyageLapsed == 0 %>
-                                "$PercentageVoyageLapsed",
+                                $PercentageVoyageLapsed,
                             <% end_if %>
                             <% if PercentageVoyageLapsed %>
-                                "$PercentageVoyageLapsed",
+                                $PercentageVoyageLapsed,
                             <% end_if %>
                         <% end_control %>
                         
@@ -67,7 +67,7 @@
             var lineOne = new google.visualization.ChartWrapper({
                 'chartType': 'LineChart',
                 'containerId': 'chart_div',
-                'dataTable': data,
+                //'dataTable': data,
                 'options': {
                 'width': 600,
                 'height': 390,
@@ -94,18 +94,36 @@
               });
                 
              mapOne.draw();
-     
-             
+       
+       // Create a range slider, passing some options
+        var dayRangeSlider = new google.visualization.ControlWrapper({
+          'controlType': 'NumberRangeFilter',
+          'containerId': 'filter_div',
+          'options': {
+            'filterColumnLabel': 'day'
+          }
+        });
+        
+        
+      // Create a dashboard.
+        var dashboard = new google.visualization.Dashboard( document.getElementById('dashboard_div'));
+        dashboard.bind(dayRangeSlider, lineOne);
+        dashboard.draw(data);
 
-        }
+       
+   
+      }
 
             </script>
 
 
                 <!--Div that will hold the chart-->
-                <div id="dashboard_div"></div>
+                <div id="dashboard_div">
+                          <div id="filter_div"></div>
+                          <div id="chart_div"></div>
 
-               <div id="chart_div"></div>
+                </div>
+
                
                <div class="clear"></div>
 
