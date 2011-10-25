@@ -62,6 +62,15 @@ abstract class SapeListingController extends FacetedListingController {
          
      }
      
+        
+       public function FilteredStatus() {
+             
+           $filterStatus = Session::get('Filtered');
+           return $filterStatus; 
+        }
+     
+        
+        
         public function change() {
              Session::set('Filtered', false);
 
@@ -108,8 +117,33 @@ abstract class SapeListingController extends FacetedListingController {
                     return;  // just give up                  
               } else {
               
-                  echo 'there';
-              };
+                $result = new DataObjectSet();
+		$items  = $this->getSourceItems();
+		$fields = $this->getListingFields();
+                
+
+		if ($items) foreach ($items as $item) {
+			$result->push($row = new DataObjectSet());
+
+			foreach ($fields as $name => $title) {
+				$row->push(new ArrayData(array(
+					'Name'  => $name,
+					'Link'  => Controller::join_links($this->Link(), $item->ID),
+					'Value' => $this->getValueFromItem($name, $item)
+				)));
+			}
+		}
+
+		$limits = $items->getPageLimits();
+		$result->setPageLimits(
+			$limits['pageStart'], $limits['pageLength'], $limits['totalSize']
+		);
+
+		return $result;   
+                
+                
+                
+                };
         }
         
         
