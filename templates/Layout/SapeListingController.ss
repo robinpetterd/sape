@@ -64,7 +64,7 @@
 
             //chart.draw(data, options);
         
-            var lineOne = new google.visualization.ChartWrapper({
+           var lineOne = new google.visualization.ChartWrapper({
                 'chartType': 'LineChart',
                 'containerId': 'chart_div',
                 //'dataTable': data,
@@ -77,8 +77,8 @@
                    'view': {'columns': columnArray}
               });
 
-             lineOne.draw();
-             
+             //lineOne.draw();
+            
                           
               var mapOne = new google.visualization.ChartWrapper({
                     'chartType': 'Map',
