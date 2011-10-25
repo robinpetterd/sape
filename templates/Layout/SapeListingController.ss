@@ -1,4 +1,3 @@
-<% require themedCSS(FacetedListingController) %>
 
 
 <div id="filter">
@@ -12,13 +11,20 @@
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
          <!-- Code to build the actual chart. -->
             <script type="text/javascript">
-              google.load("visualization", "1", {packages:["corechart"]});
+                
+              google.load('visualization', '1.0', {'packages':['controls']});
+              
               google.setOnLoadCallback(drawChart);
 
               function drawChart() {
 
                   var data = new google.visualization.DataTable();
+                  var columnCount = 2; 
+                  var columnArray = Array();
+                  
                   data.addColumn('string', 'day');
+                  data.addColumn('number', 'Lat');
+                  data.addColumn('number', 'Long');
 
                  <% control VisItems %>
                   <% if First %>
@@ -26,76 +32,85 @@
                              <% control Diseases %>
                                 <% if Name != Diseases %>
                                  data.addColumn('number', '$Name');
+                                 columnCount++;
+                                 columnArray.push( columnCount);
                                 <% end_if %>
                              <% end_control %>
                        <% end_control %>
                    <% end_if %>
-
-                   data.addRow([
-                       <% control x %>
-                        <% if PercentageVoyageLapsed == 0 %>
-                            "$PercentageVoyageLapsed",
-                        <% end_if %>
-                        <% if PercentageVoyageLapsed %>
-                            "$PercentageVoyageLapsed",
-                        <% end_if %>
-                             <% control Diseases %> <% if Name != Diseases %>$Count,<% end_if %>
-                             <% end_control %><% end_control %>
+                  data.addRow([
+                            
+                        <% control x %>
+                            <% if PercentageVoyageLapsed == 0 %>
+                                "$PercentageVoyageLapsed",
+                            <% end_if %>
+                            <% if PercentageVoyageLapsed %>
+                                "$PercentageVoyageLapsed",
+                            <% end_if %>
+                        <% end_control %>
+                        
+                      -42.492352591428194, 147.6947021484375,
+                    
+                      <% control x %>
+                             <% control Diseases %> <% if Name != Diseases %>$Count,<% end_if %> <% end_control %>
+                        <% end_control %>
+                  
                         ]);
+                    
+               <% end_control %>
+           
+              //console.log(columnArray);
+   
 
-             <% end_control %>
+            //chart.draw(data, options);
+        
+            var lineOne = new google.visualization.ChartWrapper({
+                'chartType': 'LineChart',
+                'containerId': 'chart_div',
+                'dataTable': data,
+                'options': {
+                'width': 600,
+                'height': 390,
+                'pointSize': 1,
+                'title': 'Diseases and % of the vogage',
+               },
+                   'view': {'columns': columnArray}
+              });
 
-              var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-
-              var options = {
-                  width: 600, 
-                  height: 390, 
-                  title: 'Diseases and % of the vogage',
-                  vAxis: {title:''},
-                  hAxis: {title:'% of the vogage'},
-
-                  };
-
-             chart.draw(data, options
-             );
-
+             lineOne.draw();
+             
+                          
+              var mapOne = new google.visualization.ChartWrapper({
+                    'chartType': 'Map',
+                    'containerId': 'map_div',
+                    'dataTable': data,
+                    'options': {
+                        'width': 600,
+                        'height': 390,
+                        'mapType' : 'normal',
+                        'zoomLevel':0 
+                    },
+                    'view': { 'columns': [1, 2]}
+              });
+                
+             mapOne.draw();
+     
+             
 
         }
 
-
-
             </script>
-            <p>
-
-
-              <!--  
-              <% control VisItems %>
-                   data.addRow([
-                       <% control x %>
-                        <% if PercentageVoyageLapsed %>
-                            "$PercentageVoyageLapsed",
-                        <% end_if %>
-
-                             <% control Diseases %>
-                                <% if Name != Diseases %>
-                                $Name $Count,
-                                <% end_if %>
-                             <% end_control %>
-                       <% end_control %>
-                        ]);<p>
-
-             <% end_control %>
-              -->
-
-
 
 
                 <!--Div that will hold the chart-->
-                <div id="chart_div"></div>
+                <div id="dashboard_div"></div>
 
+               <div id="chart_div"></div>
+               
+               <div class="clear"></div>
 
-
-                <div class="clear"></div>
+               <div id="map_div"></div>
+               <div class="clear"></div>
 
                 <table id="listing-items">
                         <thead>
