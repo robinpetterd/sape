@@ -1,4 +1,5 @@
 
+<div id="dashboard_div">
 
 <div id="filter">
 	$CachedFilterForm
@@ -20,7 +21,10 @@
 
                   var data = new google.visualization.DataTable();
                   var columnCount = 2; 
-                  var columnArray = Array();
+                  var columnArray = [];
+                  columnArray.push(0);
+                  //columnArray.push(1);
+
                   
                   data.addColumn('number', 'day');
                   data.addColumn('number', 'Lat');
@@ -33,7 +37,7 @@
                                 <% if Name != Diseases %>
                                  data.addColumn('number', '$Name');
                                  columnCount++;
-                                 columnArray.push( columnCount);
+                                 columnArray.push(columnCount);
                                 <% end_if %>
                              <% end_control %>
                        <% end_control %>
@@ -59,33 +63,52 @@
                     
                <% end_control %>
            
-              //console.log(columnArray);
+            //  console.log(columnArray);
    
 
             //chart.draw(data, options);
-        
-           var lineOne = new google.visualization.ChartWrapper({
+            var lineChartWidth = $('#chart_div').width();
+            var lineChartHeight = $('#filter').height()+120;
+            //console.log(lineChartWidth);
+          
+           //alert(columnCount);
+           
+           
+          
+            var lineOne = new google.visualization.ChartWrapper({
                 'chartType': 'LineChart',
                 'containerId': 'chart_div',
-                //'dataTable': data,
+                    
                 'options': {
-                'width': 600,
-                'height': 390,
-                'pointSize': 1,
-                'title': 'Diseases and % of the vogage',
+                    
+                    'width': lineChartWidth,
+                    'height': lineChartHeight,
+                    'pointSize': 1,
+                    'title': 'Diseases and % of the vogage',
+                    'hAxis':  {showTextEvery:5,title: '% of vogage',  titleTextStyle: {color: 'Black'}},                    
+                    'vAxis':  {maxValue: 1,title: 'Disease Count',  titleTextStyle: {color: 'Black'}},
+                    'chartArea': {width: '70%',height: '90%',left: 45, top: 10,bottom: 10 },
+                    "lineWidth":2,
+                    "hasLabelsColumn":true,
+                    'legendTextStyle':  {fontSize: 11}
+
+
+
+
                },
                    'view': {'columns': columnArray}
-              });
+              })
 
              //lineOne.draw();
-            
+              var mapChartWidth = $('#map_div').width();
+
                           
               var mapOne = new google.visualization.ChartWrapper({
                     'chartType': 'Map',
                     'containerId': 'map_div',
                     'dataTable': data,
                     'options': {
-                        'width': 600,
+                        'width': mapChartWidth,
                         'height': 390,
                         'mapType' : 'normal',
                         'zoomLevel':0 
@@ -101,6 +124,7 @@
           'containerId': 'filter_div',
           'options': {
             'filterColumnLabel': 'day'
+
           }
         });
         
@@ -108,19 +132,16 @@
       // Create a dashboard.
         var dashboard = new google.visualization.Dashboard( document.getElementById('dashboard_div'));
         dashboard.bind(dayRangeSlider, lineOne);
-        dashboard.draw(data);
-
-       
-   
+        dashboard.draw(data);   
       }
 
             </script>
 
 
-                <!--Div that will hold the chart-->
-                <div id="dashboard_div">
+                         <div id="chart_div"></div>
+                         <div class="clear"></div>
+
                           <div id="filter_div"></div>
-                          <div id="chart_div"></div>
 
                 </div>
 
@@ -150,7 +171,7 @@
                                                 <tr class="$EvenOdd">
                                                         <% control Me %>
                                                                 <td class="$Name.HTMLATT">
-                                                                        <a href="$Link">
+                                                                        <a href="view/$ID">
                                                                                 <% if Value %>$Value<% end_if %>
                                                                         </a>
                                                                 </td>
