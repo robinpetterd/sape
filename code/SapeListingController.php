@@ -75,8 +75,119 @@ abstract class SapeListingController extends FacetedListingController {
              Session::set('Filtered', false);
 
         }
-     
-     	public function doFilter($data, $form) {
+        
+        /*
+         * Does query and then formats that CVS. 
+         * 
+         */
+        
+     	public function doExport($data, $form) {
+                 
+            
+                Session::set('Filtered', true);
+
+                
+		$query  = $this->generateQuery($data, $form);
+		$result = $query->execute();
+
+		$this->sourceItems = singleton('DataObject')->buildDataObjectSet($result);
+
+		if ($this->sourceItems) {
+			$this->sourceItems->parseQueryLimit($query);
+		} else {
+			$this->sourceItems = new DataObjectSet();
+		}
+                
+		// Add faceting data to the page.
+		$metadata = sprintf(
+			'<script id="listing-facets" type="data">%s</script>',
+			$this->generateFacetJson($data)
+		);
+		Requirements::insertHeadTags($metadata, 'listing-facets');
+
+		$controller = $this->customise(array(
+			'Title'            => $this->PluralName(),
+			'CachedFilterForm' => $form
+		));
+		
+               // return $this->getViewer('list')->process($controller);
+                
+                $now = Date("d-m-Y-H-i");
+		$fileName = "export-$now.csv";
+                
+                if($fileData = $this->generateExportFileData()){
+
+			return SS_HTTPRequest::send_file($fileData, $fileName,'text/csv');
+		}else{
+			user_error("No records found", E_USER_ERROR);
+		}
+                
+                
+	}
+        
+        
+	/*
+         * Formats the sourceItemas as cvs string
+         * 
+         */
+	function generateExportFileData() {
+		
+		$cvs = '';
+		
+                $items = $this->sourceItems;
+                //build the columns 
+                
+                $first = $items->First();
+                
+                $fields = $first->custom_database_fields($first->ClassName);
+                
+                foreach($fields as $field => $fieldTitle) {
+                    //echo $field->fieldTitle;
+                    //Debug::show($field);
+                    $cvs .= $field . ',';	
+                   
+                }
+                
+                 //get rid the last, 
+                  $cvs =  substr_replace($cvs ,"",-1);
+                  $cvs .= "\n"; 
+                           
+                           
+                
+                //out the actual items  
+		if($items) {
+			foreach($items as $item) {
+				
+                            //debug::Show($item->custom_database_fields($item->ClassName));
+                                
+				$fields = $item->custom_database_fields($item->ClassName);
+                                
+				if($fields) foreach($fields as  $field => $fieldTitle) {
+                                        //debug::Show($field);
+					$value = $item->getField($field);
+					
+                                        //echo $value;
+                                        $cvs .= $value . ',';					
+                            }
+                           //get rid the last, 
+                           $cvs =  substr_replace($cvs ,"",-1);
+                           $cvs .= "\n"; 
+                            
+                        }
+			
+                        
+                        //echo $cvs;
+                        return $cvs;
+		} else {
+			return null;
+		}
+	}
+	
+        
+        
+        
+        
+        public function doFilter($data, $form) {
                 
                 Session::set('Filtered', true);
 
@@ -107,7 +218,48 @@ abstract class SapeListingController extends FacetedListingController {
 	}
         
         
-     
+     // -------------------------------------------------------------------------
+
+	/**
+	 * @return Form
+	 */
+	public function FilterForm() {
+		$fields = new FieldSet();
+
+		if ($this->getFulltextFields()) {
+			$fields->push(new TextField('Keywords'));
+		}
+
+		foreach ($this->getFacetableFields() as $name => $title) {
+			$fieldName = $this->convertNameToRelationID($name);
+			$fieldName = str_replace('.', '__', $fieldName);
+
+			$fields->push(new DropdownField(
+				$fieldName, $title, $this->getFacetMap($name), null, null, '(any)'
+			));
+		}
+
+		$form = new Form($this, 'FilterForm', $fields, new FieldSet(
+			new FormAction('doFilter', 'Filter'),
+                        new FormAction('doExport', 'Export'),
+			$reset = new ResetFormAction('reset', 'Reset')
+		));
+		$reset->useButtonTag = true;
+
+		// Pass along all the useful form GET params
+		$fields->push(new HiddenField('sort', '', $this->request->getVar('sort')));
+		$fields->push(new HiddenField('dir', '', $this->request->getVar('dir')));
+		$fields->push(new HiddenField('perpage', '', $this->request->getVar('perpage')));
+
+		$form->setFormMethod('GET');
+		$form->disableSecurityToken();
+		$form->addExtraClass(sprintf("{facetsLink: '%s'}", Convert::raw2js(
+			Controller::join_links($this->Link(), 'facets')
+		)));
+
+		return $form;
+	}
+
       
         public function TableItems() {
             
@@ -128,7 +280,7 @@ abstract class SapeListingController extends FacetedListingController {
 			foreach ($fields as $name => $title) {
 				$row->push(new ArrayData(array(
 					'Name'  => $name,
-					'Link'  => Controller::join_links($this->Link(), $item->ID),
+					'Link'  => $item->ID,
 					'Value' => $this->getValueFromItem($name, $item)
 				)));
 			}

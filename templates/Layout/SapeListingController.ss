@@ -171,9 +171,7 @@
                                                 <tr class="$EvenOdd">
                                                         <% control Me %>
                                                                 <td class="$Name.HTMLATT">
-                                                                        <a href="view/$ID">
-                                                                                <% if Value %>$Value<% end_if %>
-                                                                        </a>
+                                                                    <a href="view/show/$Link"><% if Value %>$Value<% end_if %></a>
                                                                 </td>
                                                         <% end_control %>
                                                 </tr>
