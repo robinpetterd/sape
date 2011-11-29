@@ -43,18 +43,14 @@
                        <% end_control %>
                    <% end_if %>
                   data.addRow([
-                            
                         <% control x %>
-                            <% if PercentageVoyageLapsed == 0 %>
-                                $PercentageVoyageLapsed,
-                            <% end_if %>
-                            <% if PercentageVoyageLapsed %>
-                                $PercentageVoyageLapsed,
-                            <% end_if %>
+                            <% if PercentageVoyageLapsed == 0 %> $PercentageVoyageLapsed,<% end_if %>
+                            <% if PercentageVoyageLapsed %> $PercentageVoyageLapsed, <% end_if %>
                         <% end_control %>
-                        
-                      -42.492352591428194, 147.6947021484375,
-                    
+                        <% control x %>
+                           <% if First %><% if lat %>$lat,<% end_if %><% end_if %>
+                           <% if Last %><% if long %>$long,<% end_if %><% end_if %>
+                        <% end_control %>
                       <% control x %>
                              <% control Diseases %> <% if Name != Diseases %>$Count,<% end_if %> <% end_control %>
                         <% end_control %>
@@ -76,11 +72,11 @@
            
           
             var lineOne = new google.visualization.ChartWrapper({
-                'chartType': 'LineChart',
+                'chartType': 'AreaChart',
                 'containerId': 'chart_div',
                     
                 'options': {
-                    
+                    //'colors': ['#b2cedc', '#7b7b7b'],
                     'width': lineChartWidth,
                     'height': lineChartHeight,
                     'pointSize': 1,
@@ -91,7 +87,6 @@
                     "lineWidth":2,
                     "hasLabelsColumn":true,
                     'legendTextStyle':  {fontSize: 11}
-
 
 
 
@@ -111,7 +106,7 @@
                         'width': mapChartWidth,
                         'height': 390,
                         'mapType' : 'normal',
-                        'zoomLevel':0 
+                        'zoomLevel':1
                     },
                     'view': { 'columns': [1, 2]}
               });
@@ -123,23 +118,68 @@
           'controlType': 'NumberRangeFilter',
           'containerId': 'filter_div',
           'options': {
-            'filterColumnLabel': 'day'
+          'filterColumnLabel': 'day'
 
           }
         });
         
-        
+      
+    
+    
       // Create a dashboard.
         var dashboard = new google.visualization.Dashboard( document.getElementById('dashboard_div'));
+        //dashboard.bind(diseasePicker, lineOne);
         dashboard.bind(dayRangeSlider, lineOne);
-        dashboard.draw(data);   
-      }
+        dashboard.bind(dayRangeSlider, mapOne);
+        
+        dashboard.draw(data); 
+         
+         
+        google.visualization.events.addListener(dayRangeSlider, 'statechange', function() {
+            //alert('go')
+            mapOne.setOptions({'zoomLevel' : 2,'mapType' : 'normal'});
+            
+            mapOne.draw('map_div'); 
 
+
+        });
+        
+        
+         // Set a 'select' event listener for the ;line.
+        // When the table is selected,
+        // we set the selection on the map.
+        google.visualization.events.addListener(lineOne, 'select',
+            function() {
+            /// console.log(lineOne.getSelection());
+            mapOne.setSelection(lineOne.getSelection());
+            //mapOne.draw('map_div');
+            });
+
+        // Set a 'select' event listener for the map.
+        // When the map is selected,
+        // we set the selection on the table.
+        google.visualization.events.addListener(mapOne, 'select',
+            function() {
+              lineOne.setSelection(mapOne.getSelection());
+       });
+            
+            
+
+       
+
+
+      }
+      
+      
+   
+   
+   
             </script>
 
 
                          <div id="chart_div"></div>
                          <div class="clear"></div>
+                         
 
                           <div id="filter_div"></div>
 
@@ -223,7 +263,8 @@
                         <% end_if %>
                 </div>
 
-
+        <% else %>
+        $SiteConfig.HelpText
         <% end_if %>
 
 </div>

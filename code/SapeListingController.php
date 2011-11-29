@@ -7,7 +7,10 @@
  */
 
 abstract class SapeListingController extends FacetedListingController {
-
+        
+        private $data;
+        private $form;
+                
    
        public function init() {
 		parent::init();
@@ -87,7 +90,7 @@ abstract class SapeListingController extends FacetedListingController {
                 Session::set('Filtered', true);
 
                 
-		$query  = $this->generateQuery($data, $form);
+		$query  = $this->generateFullQuery($data, $form);
 		$result = $query->execute();
 
 		$this->sourceItems = singleton('DataObject')->buildDataObjectSet($result);
@@ -183,6 +186,80 @@ abstract class SapeListingController extends FacetedListingController {
 		}
 	}
 	
+       
+         
+        /**
+	 * @param  array $data
+	 * @param  Form $form
+	 * @return SQLQuery
+	 */
+	protected function generateFullQuery($data, $form) {
+		$context = new SearchContext($this->getItemClass());
+
+		foreach (array_keys($this->getFacetableFields()) as $name) {
+			$context->addFilter($this->getFacetFilter($name));
+		}
+
+		$query = $context->getQuery($data);
+		$query->orderby($this->getSqlSort());
+                
+		/*$query->limit(array(
+			'start' => $this->getPaginationStart(),
+			'limit' => $this->getItemsPerPage()
+		));*/
+
+		if ($indexes = $this->getFulltextFields()) {
+			if (isset($data['Keywords']) && strlen($data['Keywords'])) {
+				$query->where(sprintf(
+					'MATCH(%s) AGAINST (\'%s\')',
+					'"' . implode('", "', $indexes) . '"',
+					Convert::raw2sql($data['Keywords'])
+				));
+			}
+		}
+
+		return $query;
+	}
+        
+        
+        
+        
+         
+        /**
+	 * @param  array $data
+	 * @param  Form $form
+	 * @return SQLQuery
+	 */
+	protected function generatePagedQuery($data, $form) {
+		$context = new SearchContext($this->getItemClass());
+
+		foreach (array_keys($this->getFacetableFields()) as $name) {
+			$context->addFilter($this->getFacetFilter($name));
+		}
+
+		$query = $context->getQuery($data);
+		$query->orderby($this->getSqlSort());
+                
+		$query->limit(array(
+			'start' => $this->getPaginationStart(),
+			'limit' => $this->getItemsPerPage()
+		));
+
+		if ($indexes = $this->getFulltextFields()) {
+			if (isset($data['Keywords']) && strlen($data['Keywords'])) {
+				$query->where(sprintf(
+					'MATCH(%s) AGAINST (\'%s\')',
+					'"' . implode('", "', $indexes) . '"',
+					Convert::raw2sql($data['Keywords'])
+				));
+			}
+		}
+
+		return $query;
+	}
+        
+        
+        
         
         
         
@@ -190,11 +267,14 @@ abstract class SapeListingController extends FacetedListingController {
         public function doFilter($data, $form) {
                 
                 Session::set('Filtered', true);
-
                 
-		$query  = $this->generateQuery($data, $form);
+		$query  = $this->generateFullQuery($data, $form);
+                
 		$result = $query->execute();
-
+                
+                $this->data = $data;
+                $this->form = $form;
+                
 		$this->sourceItems = singleton('DataObject')->buildDataObjectSet($result);
 
 		if ($this->sourceItems) {
@@ -260,15 +340,24 @@ abstract class SapeListingController extends FacetedListingController {
 		return $form;
 	}
 
+        
+
+        
       
         public function TableItems() {
             
-             $filterStatus = Session::get('Filtered');
+                
+           $filterStatus = Session::get('Filtered');
                 
             if($filterStatus == 0) { 
                     return;  // just give up                  
               } else {
-              
+                
+                $query  = $this->generatePagedQuery($this->data,$this->form );
+                
+		$result = $query->execute();             
+		$this->sourceItems = singleton('DataObject')->buildDataObjectSet($result);
+
                 $result = new DataObjectSet();
 		$items  = $this->getSourceItems();
 		$fields = $this->getListingFields();
@@ -297,13 +386,17 @@ abstract class SapeListingController extends FacetedListingController {
                 
                 };
         }
-        
-        
+
+                
      	/** Returns the data for use in the JSON google chart.
 	 * @return DataObjectSet
 	 */
+        
+        
+        
 	public function VisItems() {
                 
+  
                 //only do this if the search has been filter already
                 $filterStatus = Session::get('Filtered');
                 
@@ -556,11 +649,12 @@ abstract class SapeListingController extends FacetedListingController {
                      
                         $result->push(new ArrayData(array( 
                          'x' => new DataObjectSet(array( 
+                            array( 'lat'  => $this->getLat($currentXaxis)),
                             array( $xAxis  => $currentXaxis), //need to get the write day
-                            array('Diseases' => $list) 
+                            array('Diseases' => $list), 
+                            array( 'long'  =>  $this->getLong($currentXaxis)),  
                          )),
                             
-                       
                             
                       )));                  
                      
@@ -568,7 +662,6 @@ abstract class SapeListingController extends FacetedListingController {
                 
                 }                         
          
-                       
                         
                        //foreach ($result as $r) {
 
@@ -582,8 +675,32 @@ abstract class SapeListingController extends FacetedListingController {
              
 
 	}
-
-	
         
+        function getLat($percentage) {
+           
+            if ($percentage < 0 ) {
+                $percentage = 0; 
+            } else if ($percentage > 100) {
+                $$percentage = 100;
+            }
+            
+            //$Waypoint = $record = DataObject::get_one('WayPoint', 'Name = $percentage');
+            //return $Waypoint->Latitude;
+            return rand(1,42);
+        }
+
+       
+        function getLong($percentage) {
+           
+            if ($percentage < 0 ) {
+                $percentage = 0; 
+            } else if ($percentage > 100) {
+                $$percentage = 100;
+            }
+            
+            //$Long = $record = DataObject::get_one('WayPoint', 'Name = $percentage');
+            //return $WayPoint->Longitude;
+            return rand(1,147);
+        }      
          
 }
